@@ -1,0 +1,93 @@
+install.packages("readxl")
+library("readxl")
+install.packages("forecast")
+library(forecast)
+
+# choose your method depending upon whether you use rstudio cloud or not
+read_excel("C:\\Users\\Nikhil\\Desktop\\data_forecasting.xlsx")
+data <- read_excel("C:\\Users\\Nikhil\\Desktop\\data_forecasting.xlsx") 
+or 
+upload the file on rstudio through import 
+data <- read_excel("data_forecasting.xlsx")
+ 
+# Combine the monthly columns into a single time series object
+monthly_data <- data.frame(year_month = paste0(data$Month, "-", substr(data$Year, 3, 4)),
+                           value = c(data$`2019-2020`, data$`2020-2021`, data$`2021-2022`))
+ts_data <- ts(monthly_data$value, start = c(2019, 4), frequency = 12)
+
+# Decompose the time series into trend, seasonal, and cyclic components
+decomp_data <- decompose(ts_data)
+
+# Plot the results
+plot(decomp_data)
+
+# Fit an ARIMA model to the data
+arima_model <- auto.arima(ts_data)
+
+# Forecast the values for the next 12 months (April 2022 to March 2023)
+forecast_values <- forecast(arima_model, h = 12)
+
+# Perform the Ljung-Box test to check for autocorrelation in the residuals
+residuals <- residuals(arima_model)
+ljung_box_test <- Box.test(residuals, lag = 20, type = "Ljung-Box")
+p_value <- ljung_box_test$p.value
+print(p_value)
+
+A p-value of 0.73 indicates that there is not enough evidence to reject the null hypothesis that the residuals of the ARIMA model are independently distributed. This suggests that the model has adequately captured the patterns in the data and that there is no significant autocorrelation remaining in the residuals.
+
+# Plot the results
+plot(forecast_values)
+
+# Problems in plotting
+graphics.off()
+
+
+# Fit a Holt-Winters exponential smoothing model to the data
+holtwinters_model <- ets(ts_data, model = "ZZZ")
+
+# Forecast the values for the next 12 months (April 2022 to March 2023) using Holt-Winters
+hw_forecast <- forecast(holtwinters_model, h = 12)
+
+# Plot the Holt-Winters forecast
+plot(hw_forecast)
+
+
+# Fit a neural network model to the data
+install.packages("neuralnet")
+library(neuralnet)
+nn_model <- nnetar(ts_data)
+
+# Forecast the values for the next 12 months (April 2022 to March 2023)
+forecast_values <- forecast(nn_model, h = 12)
+
+# Plot the Neural Network results
+plot(forecast_values) 
+
+# K test
+
+install.packages("moments")
+library(moments)
+library(tseries)
+library(lmtest)
+install.packages("nortest")
+library(nortest)
+library(tseries)
+library(lmtest)
+ktest <- function(x) {
+jb <- jarque.bera.test(x)
+ad <- ad.test(x)
+c(JB = jb$p.value, AD = ad$p.value)
+}
+ktest(residuals)
+
+
+  
+
+
+ 
+
+
+
+ 
+
+
