@@ -1,0 +1,52 @@
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Define the coordinates for each country
+jaipur = (26.9124, 75.7873)
+zambia = (-13.133897, 27.849332)
+thailand = (15.8700, 100.9925)
+sri_lanka = (7.8731, 80.7718)
+oman = (23.5859, 58.4059)
+lebanon = (33.8547, 35.8623)
+saudi_arabia = (23.8859, 45.0792)
+
+# Define the demand and supply points
+demand_points = [oman, lebanon, saudi_arabia]
+supply_points = [zambia, thailand, sri_lanka]
+
+# Define the weights for the distance calculation
+weight_supply = 1
+weight_demand = 2
+
+# Define the maximum distance (in km) for the analysis
+max_distance = 10000
+
+# Calculate the center of gravity
+numerator_sum = [0, 0]
+denominator_sum = 0
+
+for supply in supply_points:
+    for demand in demand_points:
+        distance = np.sqrt((supply[0] - demand[0])**2 + (supply[1] - demand[1])**2)
+        if distance > max_distance:
+            continue
+        weight = weight_supply / distance if distance > 0 else np.inf
+        numerator_sum[0] += supply[0] * weight
+        numerator_sum[1] += supply[1] * weight
+        denominator_sum += weight
+
+center_of_gravity = (numerator_sum[0] / denominator_sum, numerator_sum[1] / denominator_sum)
+
+# Plot the results
+plt.figure(figsize=(8, 8))
+plt.scatter([p[1] for p in demand_points], [p[0] for p in demand_points], c='r', s=100)
+plt.scatter([p[1] for p in supply_points], [p[0] for p in supply_points], c='b', s=100)
+plt.scatter(center_of_gravity[1], center_of_gravity[0], c='g', marker='*', s=200)
+plt.xlim((50, 110))
+plt.ylim((-20, 40))
+plt.xlabel('Longitude')
+plt.ylabel('Latitude')
+plt.title('Center of Gravity Analysis')
+plt.legend(['Demand Points', 'Supply Points', 'Center of Gravity'])
+plt.show()
