@@ -1,0 +1,73 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Define the weights for the criteria
+weights = {'Skilled Labor': 0.3, 'Government Policies': 0.25, 'Logistics': 0.2, 'Infrastructure': 0.15, 'Raw Material Availability': 0.1}
+
+# Define the scores for each city
+scores = {
+    'Jaipur': {'Skilled Labor': 9, 'Government Policies': 8, 'Logistics': 6, 'Infrastructure': 7, 'Raw Material Availability': 5},
+    'Surat': {'Skilled Labor': 8, 'Government Policies': 7, 'Logistics': 8, 'Infrastructure': 7, 'Raw Material Availability': 6},
+    'Chennai': {'Skilled Labor': 6, 'Government Policies': 7, 'Logistics': 7, 'Infrastructure': 8, 'Raw Material Availability': 7},
+    'Kolkata': {'Skilled Labor': 6, 'Government Policies': 6, 'Logistics': 6, 'Infrastructure': 6, 'Raw Material Availability': 8},
+    'Hyderabad': {'Skilled Labor': 7, 'Government Policies': 6, 'Logistics': 7, 'Infrastructure': 7, 'Raw Material Availability': 5},
+}
+
+# Calculate the weighted scores for each city
+weighted_scores = {}
+for city in scores:
+    total_weighted_score = 0
+    for criterion, score in scores[city].items():
+        total_weighted_score += score * weights[criterion]
+    weighted_scores[city] = total_weighted_score
+
+# Generate a spider chart for each city
+for city in weighted_scores:
+    categories = list(weights.keys())
+    values = list(scores[city].values())
+    N = len(categories)
+
+    angles = [n / float(N) * 2 * np.pi for n in range(N)]
+    angles += angles[:1]
+
+    ax = plt.subplot(111, polar=True)
+
+    plt.xticks(angles[:-1], categories, color='grey', size=8)
+    ax.set_rlabel_position(0)
+    plt.yticks([5, 10, 15], ["5", "10", "15"], color="grey", size=7)
+    plt.ylim(0, 10)
+
+    values += [values[0]]
+    ax.plot(angles, values, linewidth=1, linestyle='solid')
+
+    ax.fill(angles, values, 'b', alpha=0.1)
+    plt.title(city)
+
+    plt.show()
+
+# Generate a combined spider chart
+fig = plt.figure(figsize=(8, 8))
+
+categories = list(weights.keys())
+values = list(weighted_scores.values())
+values.append(values[0])  # Add the first value again to close the loop
+N = len(categories)
+
+angles = [n / float(N) * 2 * np.pi for n in range(N)]
+angles += angles[:1]
+
+ax = plt.subplot(111, polar=True)
+
+plt.xticks(angles[:-1], categories, color='grey', size=8)
+ax.set_rlabel_position(0)
+plt.yticks([5, 10, 15], ["5", "10", "15"], color="grey", size=7)
+plt.ylim(0, 10)
+values += [values[0]]
+angles += angles[:1]
+ax.plot(angles, values, linewidth=1, linestyle='solid')
+
+ax.fill(angles, values, 'b', alpha=0.1)
+plt.title("Combined Spider Chart")
+
+plt.show()
+
